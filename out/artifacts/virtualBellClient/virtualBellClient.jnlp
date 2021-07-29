@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="virtualBellClient.jnlp">
+  <information>
+    <title>virtualBellClient</title>
+    <vendor>Unknown</vendor>
+    <description>virtualBellClient</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="FXTrayIcon-3.0.0.jar" size="13176" download="eager" />
+    <jar href="grizzly-framework-2.3.3.jar" size="786745" download="eager" />
+    <jar href="grizzly-http-2.3.3.jar" size="309011" download="eager" />
+    <jar href="grizzly-http-server-2.3.3.jar" size="193235" download="eager" />
+    <jar href="grizzly-rcm-2.3.3.jar" size="8205" download="eager" />
+    <jar href="javafx-base-16-win.jar" size="745740" download="eager" />
+    <jar href="javafx-base-16.jar" size="302" download="eager" />
+    <jar href="javafx-controls-16-win.jar" size="2530159" download="eager" />
+    <jar href="javafx-controls-16.jar" size="306" download="eager" />
+    <jar href="javafx-fxml-16-win.jar" size="128845" download="eager" />
+    <jar href="javafx-fxml-16.jar" size="302" download="eager" />
+    <jar href="javafx-graphics-16-win.jar" size="5816515" download="eager" />
+    <jar href="javafx-graphics-16.jar" size="306" download="eager" />
+    <jar href="javax.websocket-api-1.0.jar" size="36611" download="eager" />
+    <jar href="tyrus-client-1.1.jar" size="12001" download="eager" />
+    <jar href="tyrus-container-grizzly-1.1.jar" size="29602" download="eager" />
+    <jar href="tyrus-core-1.1.jar" size="159741" download="eager" />
+    <jar href="tyrus-server-1.1.jar" size="16476" download="eager" />
+    <jar href="tyrus-spi-1.1.jar" size="8108" download="eager" />
+    <jar href="tyrus-websocket-core-1.1.jar" size="152903" download="eager" />
+    <jar href="virtualBellClient.jar" size="602960" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="600" height="400" main-class="sample.Main"  name="virtualBellClient" />
+  <update check="background"/>
+</jnlp>

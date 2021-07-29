@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="135.0" prefWidth="277.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SampleController">
+    <children>
+        <Label alignment="CENTER" layoutX="-73.0" prefHeight="59.0" prefWidth="249.0" text="State:">
+            <font>
+                <Font size="30.0" />
+            </font>
+        </Label>
+        <Label fx:id="connected" alignment="CENTER" layoutX="-5.0" layoutY="32.0" prefHeight="103.0" prefWidth="287.0" text="Disconnected" textFill="#db310d">
+            <font>
+                <Font size="40.0" />
+            </font>
+        </Label>
+    </children>
+</Pane>
