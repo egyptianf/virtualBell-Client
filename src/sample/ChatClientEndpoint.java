@@ -24,6 +24,8 @@ public class ChatClientEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         System.out.println ("--- Connected " + session.getId());
+        System.out.println(java.time.LocalTime.now());
+        session.setMaxIdleTimeout(0);//A value that is 0 or negative indicates the session will never timeout due to inactivity.
         STATUS = "Connected";
         try {
             session.getBasicRemote().sendText("start");
@@ -78,6 +80,8 @@ public class ChatClientEndpoint {
     public void onClose(Session session, CloseReason closeReason) {
         System.out.println("Session " + session.getId() +
                 " closed because " + closeReason);
+        System.out.println(java.time.LocalTime.now());
+
         STATUS = "Disconnected";
         try {
             for (Session sess : mySession.getOpenSessions()) {
