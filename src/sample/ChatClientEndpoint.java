@@ -1,6 +1,7 @@
 package sample;
 
 import org.glassfish.tyrus.client.ClientManager;
+import org.glassfish.tyrus.container.grizzly.GrizzlyClientSocket;
 
 import javax.sound.sampled.*;
 import javax.websocket.*;
@@ -25,8 +26,8 @@ public class ChatClientEndpoint {
     public void onOpen(Session session) {
         System.out.println ("--- Connected " + session.getId());
         System.out.println(java.time.LocalTime.now());
-        session.setMaxIdleTimeout(0);//A value that is 0 or negative indicates the session will never timeout due to inactivity.
         STATUS = "Connected";
+
         try {
             session.getBasicRemote().sendText("start");
         } catch (IOException e) {
@@ -116,6 +117,7 @@ public class ChatClientEndpoint {
     public static void main(String[] args) {
         latch = new CountDownLatch(1);
         ClientManager client = ClientManager.createClient();
+        client.setDefaultMaxSessionIdleTimeout(-10);
         try {
             URI uri = new URI("ws://"+getIP()+":8025/folder/app");
             mySession = client.connectToServer(ChatClientEndpoint.class, uri);
