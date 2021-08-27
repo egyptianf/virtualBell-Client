@@ -1,7 +1,6 @@
 package sample;
 
 import org.glassfish.tyrus.client.ClientManager;
-import org.glassfish.tyrus.container.grizzly.GrizzlyClientSocket;
 
 import javax.sound.sampled.*;
 import javax.websocket.*;
@@ -10,6 +9,8 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 @ClientEndpoint
@@ -87,7 +88,10 @@ public class ChatClientEndpoint {
         try {
             for (Session sess : mySession.getOpenSessions()) {
                 try {
-                    sess.close();
+                    //When my session is closed, close all other sessions
+                    if(sess != mySession)
+                        sess.close();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -117,10 +121,24 @@ public class ChatClientEndpoint {
     public static void main(String[] args) {
         latch = new CountDownLatch(1);
         ClientManager client = ClientManager.createClient();
-        client.setDefaultMaxSessionIdleTimeout(-10);
+        //client.setDefaultMaxSessionIdleTimeout(-10);
         try {
             URI uri = new URI("ws://"+getIP()+":8025/folder/app");
             mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+            // Will send a message every 10 minutes, to avoid making the session idle, thus avoiding closing it
+            long MINUTES = 10;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() { // Function runs every MINUTES minutes.
+                    // Run the code you want here
+                    try {
+                        mySession.getBasicRemote().sendText("KeepSession");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, 0, 1000 * 60 * MINUTES);
             latch.await();
         } catch (DeploymentException | URISyntaxException | InterruptedException e) {
             e.printStackTrace();

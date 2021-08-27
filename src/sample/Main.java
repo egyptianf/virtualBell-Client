@@ -80,7 +80,7 @@ public class Main extends Application {
             Platform.exit();
         }catch (IllegalStateException ise)
         {
-            System.out.println("Connection has been terminated");
+            System.out.println("Connection has been terminated: Illegal State");
             window.close();
             icon.hide();
             Platform.exit();
