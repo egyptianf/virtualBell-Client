@@ -22,7 +22,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("sample.fxml")));
         window = primaryStage;
-        primaryStage.setTitle("Virtual Bell");
+        window.setTitle("Virtual Bell");
 
 
 
@@ -36,13 +36,13 @@ public class Main extends Application {
         main.start();
 
 
-        FXTrayIcon fxTrayIcon = new FXTrayIcon(primaryStage, getClass().getResource("red-circle.png"));
+        FXTrayIcon fxTrayIcon = new FXTrayIcon(window, getClass().getResource("red-circle.png"));
         fxTrayIcon.show();
-        primaryStage.setOnCloseRequest(e -> this.minimize(primaryStage));
+        window.setOnCloseRequest(e -> this.minimize(window));
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction(e -> {
             try {
-                this.closeProgram(fxTrayIcon);
+                this.closeProgram(fxTrayIcon, main);
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -51,8 +51,8 @@ public class Main extends Application {
 
 
 
-        primaryStage.setScene(new Scene(root, 300, 120));
-        primaryStage.show();
+        window.setScene(new Scene(root, 300, 120));
+        window.show();
     }
 
 
@@ -64,7 +64,7 @@ public class Main extends Application {
         System.out.println("Minimized!");
         window.close();
     }
-    private void closeProgram(FXTrayIcon icon) throws IOException {
+    private void closeProgram(FXTrayIcon icon, Thread mainThread) throws IOException {
         try {
             for (Session sess : ChatClientEndpoint.mySession.getOpenSessions()) {
                 try {
@@ -73,21 +73,36 @@ public class Main extends Application {
                     e.printStackTrace();
                 }
             }
+            System.out.println("Entered closeProgram() function");
+            window.close();
+            mainThread.interrupt();
+            icon.hide();
+            Platform.exit();
+            System.exit(0);
+
         }catch (NullPointerException ne){
             System.out.println("NO CONNECTIONS YET!");
             window.close();
+            mainThread.interrupt();
             icon.hide();
             Platform.exit();
+            System.exit(0);
         }catch (IllegalStateException ise)
         {
             System.out.println("Connection has been terminated: Illegal State");
             window.close();
+            mainThread.interrupt();
             icon.hide();
             Platform.exit();
+            System.exit(0);
+
         }
         window.close();
+        mainThread.interrupt();
         icon.hide();
         Platform.exit();
+        System.exit(0);
+
     }
     @Override
     public void stop() {
