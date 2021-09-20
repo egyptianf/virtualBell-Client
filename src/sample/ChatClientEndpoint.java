@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.beans.property.SimpleStringProperty;
 import org.glassfish.tyrus.client.ClientManager;
 
 import javax.sound.sampled.*;
@@ -19,15 +20,14 @@ public class ChatClientEndpoint {
     Thread prevPlay;
     private static CountDownLatch latch;
     public static Session mySession;
-    public static String STATUS = "disconnected";
-
+    public static SimpleStringProperty statusProperty = new SimpleStringProperty("disconnected");
 
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println ("--- Connected " + session.getId());
         System.out.println(java.time.LocalTime.now());
-        STATUS = "Connected";
+        statusProperty.set("Connected");
 
         try {
             session.getBasicRemote().sendText("start");
@@ -84,7 +84,8 @@ public class ChatClientEndpoint {
                 " closed because " + closeReason);
         System.out.println(java.time.LocalTime.now());
 
-        STATUS = "Disconnected";
+
+        statusProperty.set("Disconnected");
         try {
             for (Session sess : mySession.getOpenSessions()) {
                 try {

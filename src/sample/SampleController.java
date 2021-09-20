@@ -13,7 +13,7 @@ public class SampleController {
     public Label connected;
 
     public void initialize(){
-        connected.textProperty().bind(new SimpleStringProperty(ChatClientEndpoint.STATUS));
+        connected.textProperty().bind(ChatClientEndpoint.statusProperty);
     }
 
 
