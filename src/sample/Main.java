@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import javax.sound.sampled.*;
@@ -20,7 +21,12 @@ public class Main extends Application {
     Stage window;
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("sample.fxml")));
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("sample.fxml")));
+        Parent root = loader.load();
+        SampleController myController = loader.getController();
+        if("Connected".equals(myController.connected.getText()))
+            myController.connected.setTextFill(Color.GREEN);
+
         window = primaryStage;
         window.setTitle("Virtual Bell");
 
@@ -34,6 +40,16 @@ public class Main extends Application {
             }
         });
         main.start();
+
+        /*Trying Platform.runLater() function
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                // code goes here.
+                ChatClientEndpoint.main(null);
+            }
+        });
+         */
 
 
         FXTrayIcon fxTrayIcon = new FXTrayIcon(window, getClass().getResource("red-circle.png"));
@@ -106,7 +122,7 @@ public class Main extends Application {
     }
     @Override
     public void stop() {
-        main.interrupt();
+        //main.interrupt();
         window.close();
     }
 

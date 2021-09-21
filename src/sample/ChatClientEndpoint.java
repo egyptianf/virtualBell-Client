@@ -1,6 +1,9 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import org.glassfish.tyrus.client.ClientManager;
 
 import javax.sound.sampled.*;
@@ -15,25 +18,39 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 @ClientEndpoint
-public class ChatClientEndpoint {
+public class ChatClientEndpoint  {
     Thread music;
     Thread prevPlay;
     private static CountDownLatch latch;
     public static Session mySession;
-    public static SimpleStringProperty statusProperty = new SimpleStringProperty("disconnected");
+    public static SimpleStringProperty statusProperty = new SimpleStringProperty("DISCONNECTED");
+    public final void setStatus(String status){
+        statusProperty.set(status);
+    }
+    public final String getStatus(){
+        return statusProperty.get();
+    }
 
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println ("--- Connected " + session.getId());
         System.out.println(java.time.LocalTime.now());
-        statusProperty.set("Connected");
 
         try {
             session.getBasicRemote().sendText("start");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        //statusProperty.set("Connected");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                statusProperty.set("Connected");
+            }
+        });
+
     }
 
     @OnMessage
@@ -85,7 +102,13 @@ public class ChatClientEndpoint {
         System.out.println(java.time.LocalTime.now());
 
 
-        statusProperty.set("Disconnected");
+        //statusProperty.set("Disconnected");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                statusProperty.set("Disconnected");
+            }
+        });
         try {
             for (Session sess : mySession.getOpenSessions()) {
                 try {
@@ -145,4 +168,5 @@ public class ChatClientEndpoint {
             e.printStackTrace();
         }
     }
+
 }
