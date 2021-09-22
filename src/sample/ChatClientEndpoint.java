@@ -24,12 +24,6 @@ public class ChatClientEndpoint  {
     private static CountDownLatch latch;
     public static Session mySession;
     public static SimpleStringProperty statusProperty = new SimpleStringProperty("DISCONNECTED");
-    public final void setStatus(String status){
-        statusProperty.set(status);
-    }
-    public final String getStatus(){
-        return statusProperty.get();
-    }
 
 
     @OnOpen
@@ -148,7 +142,32 @@ public class ChatClientEndpoint  {
         //client.setDefaultMaxSessionIdleTimeout(-10);
         try {
             URI uri = new URI("ws://"+getIP()+":8025/folder/app");
-            mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+
+
+            //mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+
+            int SECS = 3;
+            // reconnection logic in a thread
+            Timer reconnection = new Timer();
+            reconnection.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                        try {
+                            if(mySession == null)
+                                mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+                            else{
+                                if(!mySession.isOpen())
+                                    mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+                            }
+                        } catch (DeploymentException e) {
+                            System.out.println("Deployment Exception");
+                            e.printStackTrace();
+                        }
+                    }
+
+            }, 0, 1000 * SECS );
+
+
             // Will send a message every 10 minutes, to avoid making the session idle, thus avoiding closing it
             long MINUTES = 10;
             Timer timer = new Timer();
@@ -157,14 +176,15 @@ public class ChatClientEndpoint  {
                 public void run() { // Function runs every MINUTES minutes.
                     // Run the code you want here
                     try {
-                        mySession.getBasicRemote().sendText("KeepSession");
-                    } catch (IOException e) {
+                        if(mySession != null && mySession.isOpen())
+                            mySession.getBasicRemote().sendText("KeepSession");
+                    } catch ( IOException e) {
                         e.printStackTrace();
                     }
                 }
             }, 0, 1000 * 60 * MINUTES);
             latch.await();
-        } catch (DeploymentException | URISyntaxException | InterruptedException e) {
+        }  catch (URISyntaxException | InterruptedException e) {
             e.printStackTrace();
         }
     }
