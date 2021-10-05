@@ -12,9 +12,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 @ClientEndpoint
@@ -23,6 +21,7 @@ public class ChatClientEndpoint  {
     Thread prevPlay;
     private static CountDownLatch latch;
     public static Session mySession;
+    public static Queue<Session> openSessions = new LinkedList<>();
     public static SimpleStringProperty statusProperty = new SimpleStringProperty("DISCONNECTED");
 
 
@@ -30,14 +29,13 @@ public class ChatClientEndpoint  {
     public void onOpen(Session session) {
         System.out.println ("--- Connected " + session.getId());
         System.out.println(java.time.LocalTime.now());
-
+        mySession = session;
+        openSessions.add(session);
         try {
             session.getBasicRemote().sendText("start");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        //statusProperty.set("Connected");
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -49,7 +47,6 @@ public class ChatClientEndpoint  {
 
     @OnMessage
     public String onMessage(String message, Session session) {
-        //BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         try {
             System.out.println ("--- HAHAHAH Received " + message);
 
@@ -57,10 +54,6 @@ public class ChatClientEndpoint  {
                 runBell();
             }
             return "OK";
-            /*
-            String userInput = bufferRead.readLine();
-            return userInput;
-             */
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -95,28 +88,13 @@ public class ChatClientEndpoint  {
                 " closed because " + closeReason);
         System.out.println(java.time.LocalTime.now());
 
-
-        //statusProperty.set("Disconnected");
+        openSessions.remove(session);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 statusProperty.set("Disconnected");
             }
         });
-        try {
-            for (Session sess : mySession.getOpenSessions()) {
-                try {
-                    //When my session is closed, close all other sessions
-                    if(sess != mySession)
-                        sess.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }catch (NullPointerException ne){
-            System.out.println("NO CONNECTIONS YET!");
-        }
         latch.countDown();
     }
 
@@ -153,11 +131,16 @@ public class ChatClientEndpoint  {
                 @Override
                 public void run() {
                         try {
-                            if(mySession == null)
+                            if(mySession == null) {
                                 mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+                                openSessions.add(mySession);
+                            }
                             else{
-                                if(!mySession.isOpen())
+                                if(!mySession.isOpen()){
+                                    openSessions.remove(mySession);
                                     mySession = client.connectToServer(ChatClientEndpoint.class, uri);
+                                    openSessions.add(mySession);
+                                }
                             }
                         } catch (DeploymentException e) {
                             System.out.println("Deployment Exception");

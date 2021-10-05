@@ -82,13 +82,7 @@ public class Main extends Application {
     }
     private void closeProgram(FXTrayIcon icon, Thread mainThread) throws IOException {
         try {
-            for (Session sess : ChatClientEndpoint.mySession.getOpenSessions()) {
-                try {
-                    sess.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            ChatClientEndpoint.mySession.close();
             System.out.println("Entered closeProgram() function");
             window.close();
             mainThread.interrupt();
