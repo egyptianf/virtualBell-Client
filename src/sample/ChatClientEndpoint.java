@@ -133,20 +133,20 @@ public class ChatClientEndpoint  {
                 public void run() {
                         try {
                             if(mySession == null) {
-                                System.out.println("mySession is null");
+                                //System.out.println("mySession is null");
                                 mySession = client.connectToServer(ChatClientEndpoint.class, uri);
                             }
                             else{
-                                System.out.println("mySession is not null");
+                                //System.out.println("mySession is not null");
                                 if(!mySession.isOpen()){
                                     System.out.println("And my session is closed!");
                                     mySession.close();
                                     mySession = client.connectToServer(ChatClientEndpoint.class, uri);
                                 }
                             }
-                            System.out.println("Number of open sessions: " + openSessions.size());
+                            //System.out.println("Number of open sessions: " + openSessions.size());
                         } catch (DeploymentException | IOException e) {
-                            System.out.println("Deployment or IO Exception");
+                            //System.out.println("Deployment or IO Exception");
                             e.printStackTrace();
                         }
                     }
