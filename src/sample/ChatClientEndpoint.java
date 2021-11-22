@@ -22,7 +22,7 @@ public class ChatClientEndpoint  {
     Thread music;
     Thread prevPlay;
     private static CountDownLatch latch;
-    public static Session mySession;
+    public static Session mySession = null;
     public static Queue<Session> openSessions = new LinkedList<>();
     public static SimpleStringProperty statusProperty = new SimpleStringProperty("DISCONNECTED");
 
@@ -102,6 +102,7 @@ public class ChatClientEndpoint  {
                 statusProperty.set("Disconnected");
             }
         });
+        mySession = null;
         latch.countDown();
     }
 
@@ -139,18 +140,20 @@ public class ChatClientEndpoint  {
                 public void run() {
                         try {
                             if(mySession == null) {
+                                //System.out.println("mySession is null");
                                 mySession = client.connectToServer(ChatClientEndpoint.class, uri);
-                                openSessions.add(mySession);
                             }
                             else{
+                                //System.out.println("mySession is not null");
                                 if(!mySession.isOpen()){
-                                    openSessions.remove(mySession);
+                                    System.out.println("And my session is closed!");
+                                    mySession.close();
                                     mySession = client.connectToServer(ChatClientEndpoint.class, uri);
-                                    openSessions.add(mySession);
                                 }
                             }
-                        } catch (DeploymentException e) {
-                            System.out.println("Deployment Exception");
+                            //System.out.println("Number of open sessions: " + openSessions.size());
+                        } catch (DeploymentException | IOException e) {
+                            //System.out.println("Deployment or IO Exception");
                             e.printStackTrace();
                         }
                     }
