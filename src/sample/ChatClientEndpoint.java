@@ -12,6 +12,8 @@ import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.security.PolicySpi;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
@@ -58,6 +60,10 @@ public class ChatClientEndpoint  {
             throw new RuntimeException(e);
         }
     }
+    @OnMessage
+    public void healthCheckCallback(PongMessage pong, Session session) throws IOException {
+        session.getBasicRemote().sendPong(ByteBuffer.wrap(pong.getApplicationData().array()));
+    }
 
     private void runBell() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // Run any sound
@@ -81,6 +87,7 @@ public class ChatClientEndpoint  {
         }
 
     }
+  
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
@@ -170,6 +177,8 @@ public class ChatClientEndpoint  {
         }  catch (URISyntaxException | InterruptedException e) {
             e.printStackTrace();
         }
+
+
     }
 
 }
